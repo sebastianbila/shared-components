@@ -9,18 +9,18 @@ import { useTable } from '../hooks'
 const columns: TableColumn[] = [
   {
     type: TableColumnType.TEXT,
-    accessor: 'fullName',
+    accessor: 'name',
     title: 'Full name'
   },
   {
     type: TableColumnType.TEXT,
-    accessor: 'email',
-    title: 'email'
+    accessor: 'age',
+    title: 'age'
   },
   {
     type: TableColumnType.TEXT,
-    accessor: 'address',
-    title: 'Address'
+    accessor: 'score',
+    title: 'score'
   }
 ]
 
@@ -36,7 +36,8 @@ const Table: FC<TableProps> = () => {
   } = useTable({
     columns,
     data: mock,
-    enableSorting: true
+    enableSorting: true,
+    enableMultiSorting: true
   })
 
   return (

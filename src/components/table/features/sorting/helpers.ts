@@ -5,8 +5,6 @@ export function convertAppliedSortingMapToArray(
 ): SortBy {
   const sortingObject = Object.fromEntries(appliedSorting)
 
-  console.log('appliedSorting', appliedSorting)
-  console.log('sortingObject', sortingObject)
   return Object.keys(sortingObject).map((accessor: string) => ({
     key: accessor,
     order: sortingObject[accessor]

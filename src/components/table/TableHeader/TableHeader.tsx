@@ -30,7 +30,7 @@ const TableHeader: FC<TableHeaderProps> = ({
           &nbsp;({appliedSorting.get(column.accessor)})&nbsp;
         </th>
       )),
-    [columns, handleSorting]
+    [columns, appliedSorting, handleSorting]
   )
 
   return (

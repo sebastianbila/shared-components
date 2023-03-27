@@ -6,23 +6,33 @@
 
 export const mock = [
   {
-    fullName: 'John',
-    email: 25,
-    address: ''
+    name: 'John',
+    age: 25,
+    score: 90
   },
   {
-    fullName: 'Emily',
-    email: 30,
-    address: ''
+    name: 'Mary',
+    age: 30,
+    score: 80
   },
   {
-    fullName: 'Mike',
-    email: 20,
-    address: ''
+    name: 'Bob',
+    age: 25,
+    score: 85
   },
   {
-    fullName: 'Sophia',
-    email: 27,
-    address: ''
+    name: 'Alice',
+    age: 20,
+    score: 95
+  },
+  {
+    name: 'Tom',
+    age: 30,
+    score: 70
+  },
+  {
+    name: 'Jane',
+    age: 20,
+    score: 90
   }
 ]

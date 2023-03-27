@@ -1,15 +1,15 @@
 import { type RowData, type TableColumn } from '../types'
-import { useSorting } from '@/components/table/features'
+import { useSorting, type UseSortingOptions } from '@/components/table/features'
 
-export interface UseTableOptions {
+export interface UseTableOptions extends UseSortingOptions {
   columns: TableColumn[]
   data?: RowData[]
   enableSorting?: boolean
 }
 
-function useTable({ columns, data }: UseTableOptions): any {
+function useTable({ columns, data, enableMultiSorting }: UseTableOptions): any {
   const { sortedData, appliedSorting, clearSorting, handleSorting } =
-    useSorting(data || [])
+    useSorting(data, { enableMultiSorting })
 
   return {
     columns,

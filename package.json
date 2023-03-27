@@ -16,7 +16,8 @@
     "@preact/signals-react": "^1.2.2",
     "@tanstack/react-table": "^8.7.9",
     "lodash.noop": "^3.0.1",
-    "solid-js": "^1.6.16"
+    "solid-js": "^1.6.16",
+    "zustand": "^4.3.6"
   },
   "devDependencies": {
     "@babel/core": "^7.21.0",
