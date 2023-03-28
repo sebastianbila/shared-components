@@ -20,7 +20,9 @@ const columns: TableColumn[] = [
   {
     type: TableColumnType.TEXT,
     accessor: 'score',
-    title: 'score'
+    title: 'score',
+    valueExtractor: (row) => row.score.number,
+    sortBy: 'score.number'
   }
 ]
 
@@ -30,19 +32,20 @@ const Table: FC<TableProps> = () => {
   const {
     columns: tableColumns,
     handleSorting,
-    clearSorting,
+    resetSorting,
     appliedSorting,
     data
   } = useTable({
     columns,
     data: mock,
+
     enableSorting: true,
     enableMultiSorting: true
   })
 
   return (
     <TableContextProvider columns={tableColumns} data={data}>
-      <div onClick={clearSorting}>Clear</div>
+      <div onClick={resetSorting}>Clear</div>
       <table style={{ borderCollapse: 'collapse' }}>
         <TableHeader
           onSorting={handleSorting}

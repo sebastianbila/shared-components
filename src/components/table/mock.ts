@@ -8,31 +8,43 @@ export const mock = [
   {
     name: 'John',
     age: 25,
-    score: 90
+    score: {
+      number: 90
+    }
   },
   {
     name: 'Mary',
     age: 30,
-    score: 80
+    score: {
+      number: 80
+    }
   },
   {
     name: 'Bob',
     age: 25,
-    score: 85
+    score: {
+      number: 85
+    }
   },
   {
     name: 'Alice',
     age: 20,
-    score: 95
+    score: {
+      number: 95
+    }
   },
   {
     name: 'Tom',
     age: 30,
-    score: 70
+    score: {
+      number: 70
+    }
   },
   {
     name: 'Jane',
     age: 20,
-    score: 90
+    score: {
+      number: 90
+    }
   }
 ]

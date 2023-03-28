@@ -8,7 +8,7 @@ const TableBody: FC = () => {
   const renderCells = useCallback(
     (row: RowData) =>
       columns.map((column: TableColumn, idx) => {
-        const value = row[column.accessor]
+        const value = column?.valueExtractor?.(row) ?? row[column.accessor]
 
         return <td key={idx}>{String(value)}</td>
       }),

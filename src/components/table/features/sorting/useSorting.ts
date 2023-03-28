@@ -1,47 +1,55 @@
 import { useCallback, useEffect } from 'react'
-import { type UseSortingOptions, type UseSortingReturnType } from './types'
-import { type RowsData } from '@/components/table'
+import { type LocalUseSortingOptions, type UseSortingReturnType } from './types'
+import { type RowsData, type TableColumn } from '@/components/table'
 import useModState from './state'
 
 function useSorting(
   originalData: RowsData = [],
-  options: UseSortingOptions = {}
+  options: LocalUseSortingOptions
 ): UseSortingReturnType {
-  const { enableMultiSorting = false } = options
+  const { columnsMap, enableMultiSorting = false } = options
 
   const {
     data,
     appliedSorting,
     setState,
-    makeSorting,
-    makeMultiSorting,
+    performOneColumnSorting,
+    performMultiSorting,
     clearAppliedSorting
   } = useModState()
 
   useEffect(() => {
     setState({
+      data: originalData,
       originalData,
-      data: originalData
+      columnsMap
     })
   }, [originalData])
 
   const handleSorting = useCallback(
-    (accessor: string): void => {
+    (accessor: string, column: TableColumn): void => {
       if (enableMultiSorting) {
-        makeMultiSorting(accessor)
+        performMultiSorting(accessor, column)
         return
       }
 
-      makeSorting(accessor)
+      performOneColumnSorting(accessor, column)
     },
-    [makeSorting, makeMultiSorting]
+    []
   )
+
+  const resetSorting = useCallback(() => {
+    clearAppliedSorting()
+    setState({
+      data: originalData
+    })
+  }, [])
 
   return {
     sortedData: data,
     appliedSorting,
     handleSorting,
-    clearSorting: clearAppliedSorting
+    resetSorting
   }
 }
 

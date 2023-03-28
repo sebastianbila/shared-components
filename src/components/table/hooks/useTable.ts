@@ -1,15 +1,22 @@
 import { type RowData, type TableColumn } from '../types'
 import { useSorting, type UseSortingOptions } from '@/components/table/features'
+import { mapTableColumnsArrayToMap } from '@/components/table/helpers'
 
 export interface UseTableOptions extends UseSortingOptions {
   columns: TableColumn[]
   data?: RowData[]
+
   enableSorting?: boolean
 }
 
 function useTable({ columns, data, enableMultiSorting }: UseTableOptions): any {
-  const { sortedData, appliedSorting, clearSorting, handleSorting } =
-    useSorting(data, { enableMultiSorting })
+  const columnsMap = mapTableColumnsArrayToMap(columns)
+
+  const { sortedData, appliedSorting, resetSorting, handleSorting } =
+    useSorting(data || [], {
+      enableMultiSorting,
+      columnsMap
+    })
 
   return {
     columns,
@@ -17,7 +24,7 @@ function useTable({ columns, data, enableMultiSorting }: UseTableOptions): any {
 
     appliedSorting,
     handleSorting,
-    clearSorting
+    resetSorting
   }
 }
 

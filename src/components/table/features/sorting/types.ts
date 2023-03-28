@@ -1,4 +1,17 @@
-import { type RowData } from '@/components/table'
+import {
+  type RowData,
+  type TableColumn,
+  type TableColumnMap
+} from '@/components/table'
+import { type Dictionary } from '@/types'
+
+export interface UseSortingOptions {
+  enableMultiSorting?: boolean
+}
+
+export interface LocalUseSortingOptions extends UseSortingOptions {
+  columnsMap: TableColumnMap
+}
 
 export enum SORTING_ORDER {
   ASC = 'asc',
@@ -6,22 +19,23 @@ export enum SORTING_ORDER {
   DEFAULT = 'default'
 }
 
+export type SortingFnReturnType = -1 | 0 | 1
+export type SortingFn = (a: Dictionary, b: Dictionary) => SortingFnReturnType
 export type AppliedSorting = Map<string, SORTING_ORDER>
+export type HandleSortingFn = (accessor: string, column: TableColumn) => void
 
-export type HandleSortingFn = (accessor: string) => void
-
-export type SortBy = Array<{
+export interface SortByItem {
   key: string
   order: SORTING_ORDER
-}>
-
-export interface UseSortingOptions {
-  enableMultiSorting?: boolean
+  sortBy?: string
+  sortingFn?: SortingFn
 }
+
+export type SortByArray = SortByItem[]
 
 export interface UseSortingReturnType {
   sortedData: RowData
   appliedSorting: AppliedSorting
   handleSorting: HandleSortingFn
-  clearSorting: () => void
+  resetSorting: () => void
 }

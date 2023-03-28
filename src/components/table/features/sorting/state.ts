@@ -1,17 +1,22 @@
 import { create } from 'zustand'
-import { type RowsData } from '@/components'
+import {
+  type RowsData,
+  type TableColumn,
+  type TableColumnMap
+} from '@/components'
 import { type AppliedSorting, SORTING_ORDER } from './types'
-import { convertAppliedSortingMapToArray } from './helpers'
+import { mapAppliedSortingMapToArray } from '@/components/table/helpers'
 import SortingEngine from './engine'
 
 interface UseSortingState {
   data: RowsData
+  columnsMap: TableColumnMap
   originalData: RowsData
   setState: (state: any) => void
   appliedSorting: AppliedSorting
   clearAppliedSorting: () => void
-  makeSorting: (accessor: string) => RowsData
-  makeMultiSorting: (accessor: string) => RowsData
+  performOneColumnSorting: (accessor: string, column: TableColumn) => RowsData
+  performMultiSorting: (accessor: string, column: TableColumn) => RowsData
 }
 
 const useModState = create<UseSortingState>()((set, get) => {
@@ -51,6 +56,7 @@ const useModState = create<UseSortingState>()((set, get) => {
     originalData: [],
     data: [],
     appliedSorting: new Map(),
+    columnsMap: new Map(),
 
     setState: (state: any) => {
       set(state)
@@ -62,11 +68,16 @@ const useModState = create<UseSortingState>()((set, get) => {
       })
     },
 
-    makeSorting: (accessor: string) => {
+    performOneColumnSorting: (accessor: string, column: TableColumn) => {
       const { data, originalData, appliedSorting } = get()
 
       const order = getNextSortingOrder(accessor)
-      const sorterData = sortingEngine.performSorting(data, accessor, order)
+      const sorterData = sortingEngine.performSorting(data, {
+        key: accessor,
+        order,
+        sortBy: column.sortBy,
+        sortingFn: column.sortingFn
+      })
 
       const map = structuredClone(appliedSorting)
       map.clear()
@@ -87,14 +98,19 @@ const useModState = create<UseSortingState>()((set, get) => {
       })
     },
 
-    makeMultiSorting: (accessor: string) => {
+    performMultiSorting: (accessor: string) => {
       updateAppliedSorting(accessor)
 
-      const { data, originalData, appliedSorting } = get()
+      const { data, originalData, appliedSorting, columnsMap } = get()
 
-      const sortBy = convertAppliedSortingMapToArray(appliedSorting)
+      const sortBy = mapAppliedSortingMapToArray(appliedSorting, columnsMap)
+
+      if (!sortBy.length) {
+        set({ data: originalData })
+        return
+      }
+
       const dataToSort = sortBy.length === 1 ? originalData : data
-
       const sortedData = sortingEngine.performMultiSorting(dataToSort, sortBy)
 
       set({ data: sortedData })
