@@ -23,4 +23,5 @@ export type TableColumn =
   | TextTableColumn
   | SelectTableColumn
 
-export type TableColumnMap = Map<string, TableColumn>
+export type TableColumns = TableColumn[]
+export type TableColumnsMap = Map<string, TableColumn>

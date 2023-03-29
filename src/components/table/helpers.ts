@@ -2,11 +2,11 @@ import {
   type AppliedSorting,
   type SortByArray
 } from '@/components/table/features'
-import { type TableColumn, type TableColumnMap } from '@/components'
+import { type TableColumn, type TableColumnsMap } from '@/components'
 
 export function mapAppliedSortingMapToArray(
   appliedSorting: AppliedSorting,
-  columnsMap: TableColumnMap
+  columnsMap: TableColumnsMap
 ): SortByArray {
   const sortingObject = Object.fromEntries(appliedSorting)
 
@@ -15,7 +15,7 @@ export function mapAppliedSortingMapToArray(
 
     return {
       key: accessor,
-      order: sortingObject[accessor],
+      order: sortingObject[accessor].order,
       sortBy: column?.sortBy,
       sortingFn: column?.sortingFn
     }
@@ -24,7 +24,7 @@ export function mapAppliedSortingMapToArray(
 
 export function mapTableColumnsArrayToMap(
   columns: TableColumn[]
-): TableColumnMap {
+): TableColumnsMap {
   const map = new Map<string, TableColumn>()
 
   columns.forEach((column: TableColumn) => {

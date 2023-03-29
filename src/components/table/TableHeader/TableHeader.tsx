@@ -1,8 +1,8 @@
 import React, { type FC, useCallback } from 'react'
 import { type TableColumn } from '@/components/table/types'
 import { useTableContext } from '@/components/table/context'
-import noop from 'lodash.noop'
 import { type AppliedSorting } from '@/components/table/features/sorting'
+import noop from 'lodash.noop'
 
 interface TableHeaderProps {
   onSorting?: (accessor: string, column: TableColumn) => void
@@ -27,7 +27,7 @@ const TableHeader: FC<TableHeaderProps> = ({
       columns.map((column: TableColumn) => (
         <th key={column.accessor} onClick={handleSorting(column)}>
           {column.title}
-          &nbsp;({appliedSorting.get(column.accessor)})&nbsp;
+          &nbsp;({appliedSorting?.get(column.accessor)?.order})&nbsp;
         </th>
       )),
     [columns, appliedSorting, handleSorting]

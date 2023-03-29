@@ -1,2 +1,2 @@
 export * from './types'
-export { default as useSorting } from './useSorting'
+export { default as SortingFeature } from './sorting'

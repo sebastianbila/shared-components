@@ -1,31 +1,21 @@
-import { type RowData, type TableColumn } from '../types'
-import { useSorting, type UseSortingOptions } from '@/components/table/features'
-import { mapTableColumnsArrayToMap } from '@/components/table/helpers'
+import { TableCore, type TableOptions, type TableState } from '../core'
 
-export interface UseTableOptions extends UseSortingOptions {
-  columns: TableColumn[]
-  data?: RowData[]
+import { useState } from 'react'
 
-  enableSorting?: boolean
-}
+const tableCore = new TableCore()
 
-function useTable({ columns, data, enableMultiSorting }: UseTableOptions): any {
-  const columnsMap = mapTableColumnsArrayToMap(columns)
+function useTable(options: TableOptions): any {
+  const [state, setState] = useState<TableState>(tableCore.state)
 
-  const { sortedData, appliedSorting, resetSorting, handleSorting } =
-    useSorting(data || [], {
-      enableMultiSorting,
-      columnsMap
-    })
+  tableCore.createTable({
+    ...options,
+    state,
+    onStateChange: (state) => {
+      setState(state)
+    }
+  })
 
-  return {
-    columns,
-    data: sortedData,
-
-    appliedSorting,
-    handleSorting,
-    resetSorting
-  }
+  return state
 }
 
 export default useTable

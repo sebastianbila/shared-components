@@ -1,16 +1,22 @@
 import {
-  type RowData,
+  type RowsData,
   type TableColumn,
-  type TableColumnMap
+  type TableColumnsMap,
+  type TableState
 } from '@/components/table'
 import { type Dictionary } from '@/types'
 
-export interface UseSortingOptions {
+export interface SortingFeatureOptions {
   enableMultiSorting?: boolean
 }
 
-export interface LocalUseSortingOptions extends UseSortingOptions {
-  columnsMap: TableColumnMap
+export type HandleSortingFn = (accessor: string, column: TableColumn) => void
+export type AppliedSorting = Map<string, SortByItem>
+
+export interface SortingReturnType {
+  appliedSorting: AppliedSorting
+  handleSorting: HandleSortingFn
+  resetSorting: () => void
 }
 
 export enum SORTING_ORDER {
@@ -18,11 +24,6 @@ export enum SORTING_ORDER {
   DESC = 'desc',
   DEFAULT = 'default'
 }
-
-export type SortingFnReturnType = -1 | 0 | 1
-export type SortingFn = (a: Dictionary, b: Dictionary) => SortingFnReturnType
-export type AppliedSorting = Map<string, SORTING_ORDER>
-export type HandleSortingFn = (accessor: string, column: TableColumn) => void
 
 export interface SortByItem {
   key: string
@@ -32,10 +33,18 @@ export interface SortByItem {
 }
 
 export type SortByArray = SortByItem[]
+export type SortingFnReturnType = -1 | 0 | 1
+export type SortingFn = (a: Dictionary, b: Dictionary) => SortingFnReturnType
 
-export interface UseSortingReturnType {
-  sortedData: RowData
+export interface SortingState {
+  readonly originalData: RowsData
+  data: RowsData
   appliedSorting: AppliedSorting
-  handleSorting: HandleSortingFn
-  resetSorting: () => void
+}
+
+export interface SortingOptions {
+  state: TableState
+  columnsMap: TableColumnsMap
+  enableMultiSorting?: boolean
+  onStateChange: (state: SortingState) => void
 }
