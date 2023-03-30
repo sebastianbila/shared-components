@@ -10,17 +10,18 @@ import { mapAppliedSortingMapToArray } from '@/components/table/helpers'
 import { type Dictionary } from '@/types'
 
 const initialOptions = {
-  data: [],
   columnsMap: new Map(),
   state: {
+    columns: [],
     data: [],
     originalData: [],
     appliedSorting: new Map()
-  }
+  },
+  onStateChange: () => {}
 }
 
 class SortingFeature {
-  private options: SortingOptions = initialOptions as SortingOptions
+  private options: SortingOptions = initialOptions
 
   private readonly sortingEngine: SortingEngine
 

@@ -10,7 +10,7 @@ export interface TableState extends Partial<SortingReturnType> {
   columns: TableColumns
   originalData?: RowsData
   data?: RowsData
-  __initial: boolean
+  __initial?: boolean
 }
 
 export interface TableCoreOptions
