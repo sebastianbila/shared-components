@@ -31,7 +31,7 @@ class SortingFeature {
     this.sortingEngine = new SortingEngine()
   }
 
-  public setOptions = (options: SortingOptions): SortingFeature => {
+  public setOptions = (options: SortingOptions): void => {
     this.options = options
 
     this.state = {
@@ -39,8 +39,6 @@ class SortingFeature {
       originalData: options.state.originalData || [],
       appliedSorting: options.state.appliedSorting || new Map()
     }
-
-    return this
   }
 
   public resetSorting = (): void => {

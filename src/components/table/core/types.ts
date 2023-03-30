@@ -1,4 +1,5 @@
 import {
+  type SearchFeatureOptions,
   type SortingFeature,
   type SortingFeatureOptions,
   type SortingReturnType
@@ -13,13 +14,14 @@ export interface TableState extends Partial<SortingReturnType> {
 
 export type PrivateTableState = TableState & { __initial: boolean }
 
-export interface TableCoreOptions extends SortingFeatureOptions {
+export interface TableCoreOptions
+  extends SortingFeatureOptions,
+    SearchFeatureOptions {
   onStateChange: (state: TableState) => void
   state: TableState
 
   columns: TableColumns
   data?: RowsData
-  enableSorting?: boolean
 }
 
 export interface TableOptions
@@ -27,4 +29,5 @@ export interface TableOptions
 
 export interface TableFeatures {
   sorting: SortingFeature
+  search
 }

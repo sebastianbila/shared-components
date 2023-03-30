@@ -1,5 +1,5 @@
 import { type PrivateTableState, type TableColumnsMap } from '@/components'
-import { SortingFeature } from '@/components/table/features'
+import { SearchFeature, SortingFeature } from '@/components/table/features'
 import { mapTableColumnsArrayToMap } from '@/components/table/helpers'
 import {
   type TableCoreOptions,
@@ -27,7 +27,8 @@ class TableCore {
 
   constructor() {
     this.features = {
-      sorting: new SortingFeature()
+      sorting: new SortingFeature(),
+      search: new SearchFeature()
     }
   }
 

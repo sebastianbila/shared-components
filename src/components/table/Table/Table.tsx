@@ -1,4 +1,4 @@
-import React, { type FC } from 'react'
+import React, { type FC, useState } from 'react'
 import { type TableColumn, TableColumnType } from '../types'
 import { type TableContextData, TableContextProvider } from '../context'
 import { mock } from '../mock'
@@ -29,6 +29,8 @@ const columns: TableColumn[] = [
 interface TableProps extends TableContextData {}
 
 const Table: FC<TableProps> = () => {
+  const [searchValue, setSearchValue] = useState('')
+
   const {
     columns: tableColumns,
     handleSorting,
@@ -39,13 +41,24 @@ const Table: FC<TableProps> = () => {
     columns,
     data: mock,
 
+    searchFor: searchValue,
+
     enableSorting: true,
     enableMultiSorting: true
   })
 
   return (
     <TableContextProvider columns={tableColumns} data={data}>
-      <div onClick={resetSorting}>Clear</div>
+      <div onClick={resetSorting}>Clear Sorting</div>
+
+      <input
+        type="text"
+        value={searchValue}
+        onChange={(e: any) => {
+          setSearchValue(e.target.value)
+        }}
+      />
+
       <table style={{ borderCollapse: 'collapse' }}>
         <TableHeader
           onSorting={handleSorting}

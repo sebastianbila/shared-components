@@ -7,6 +7,7 @@ import {
 import { type Dictionary } from '@/types'
 
 export interface SortingFeatureOptions {
+  enableSorting?: boolean
   enableMultiSorting?: boolean
 }
 
