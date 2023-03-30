@@ -10,8 +10,8 @@ import cloneDeep from 'lodash.clonedeep'
 import isEqual from 'lodash.isequal'
 
 const initialState = {
-  columns: [],
   __initial: true,
+  columns: [],
   appliedSorting: new Map()
 }
 
@@ -23,8 +23,8 @@ const initialOptions: TableCoreOptions = {
 
 class TableCore {
   public features: TableFeatures
-  private options: TableCoreOptions = initialOptions
 
+  private options: TableCoreOptions = initialOptions
   private state: TableState = initialState
 
   constructor() {
@@ -38,66 +38,53 @@ class TableCore {
     return mapTableColumnsArrayToMap(this.state.columns)
   }
 
-  public createTable = (options: TableCoreOptions): TableCore => {
+  public createTable = (options: TableCoreOptions): void => {
     this.options = Object.assign(this.options, options)
 
-    if (options.state.__initial) {
+    if (this.options.state.__initial) {
       this.setState({
-        originalData: options.data,
-        data: options.data,
         columns: options.columns,
-        __initial: false
+        data: options.data,
+        originalData: options.data
       })
-
       this.initFeatures()
+
+      return
     }
 
-    if (!isEqual(this.options.state, options.state)) {
+    if (!isEqual(this.state, options.state)) {
       this.setState(options.state)
     }
 
     this.useFeatures()
-
-    return this
   }
 
-  public readonly setState = (
+  private readonly setState = (
     state: TableState | Partial<TableState>
   ): void => {
-    const newState = cloneDeep({ ...this.state, ...state })
+    const newState = cloneDeep({
+      ...this.state,
+      ...state,
+      __initial: false
+    })
 
     this.state = newState
-    this.options.onStateChange(newState as TableState)
+    this.options.onStateChange(newState)
   }
 
   private initFeatures(): void {
     if (this.options.enableSorting) {
-      this.enableSorting()
+      this.setState({
+        handleSorting: this.features.sorting.performSorting,
+        resetSorting: this.features.sorting.resetSorting
+      })
     }
-  }
-
-  private readonly enableSorting = (): void => {
-    this.features.sorting.setOptions({
-      state: this.state,
-      columnsMap: this.columnsMap,
-      enableMultiSorting: this.options.enableMultiSorting,
-      onStateChange: (state) => {
-        this.setState(state)
-      }
-    })
-
-    this.setState({
-      handleSorting: this.features.sorting.performSorting,
-      resetSorting: this.features.sorting.resetSorting
-    })
   }
 
   private useFeatures(): void {
     if (this.options.enableSorting) {
       this.useSorting()
     }
-
-    console.log('o', this.options.searchFor)
   }
 
   private readonly useSorting = (): void => {
