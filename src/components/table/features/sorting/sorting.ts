@@ -11,18 +11,15 @@ import { type Dictionary } from '@/types'
 
 const initialOptions = {
   data: [],
-  columnsMap: new Map()
-}
-
-const initialState = {
-  data: [],
-  originalData: [],
-  appliedSorting: new Map()
+  columnsMap: new Map(),
+  state: {
+    data: [],
+    originalData: [],
+    appliedSorting: new Map()
+  }
 }
 
 class SortingFeature {
-  state: SortingState = initialState
-
   private options: SortingOptions = initialOptions as SortingOptions
 
   private readonly sortingEngine: SortingEngine
@@ -31,14 +28,12 @@ class SortingFeature {
     this.sortingEngine = new SortingEngine()
   }
 
+  private get state(): SortingState {
+    return this.options.state as SortingState
+  }
+
   public setOptions = (options: SortingOptions): void => {
     this.options = options
-
-    this.state = {
-      data: options.state.data || [],
-      originalData: options.state.originalData || [],
-      appliedSorting: options.state.appliedSorting || new Map()
-    }
   }
 
   public resetSorting = (): void => {
@@ -163,8 +158,7 @@ class SortingFeature {
   }
 
   private readonly setState = (newState: Partial<SortingState>): void => {
-    this.state = { ...this.state, ...newState }
-    this.options.onStateChange(this.state)
+    this.options.onStateChange({ ...this.state, ...newState })
   }
 }
 

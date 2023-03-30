@@ -10,9 +10,8 @@ export interface TableState extends Partial<SortingReturnType> {
   columns: TableColumns
   originalData?: RowsData
   data?: RowsData
+  __initial: boolean
 }
-
-export type PrivateTableState = TableState & { __initial: boolean }
 
 export interface TableCoreOptions
   extends SortingFeatureOptions,

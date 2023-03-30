@@ -1,4 +1,4 @@
-import { type PrivateTableState, type TableColumnsMap } from '@/components'
+import { type TableColumnsMap } from '@/components'
 import { SearchFeature, SortingFeature } from '@/components/table/features'
 import { mapTableColumnsArrayToMap } from '@/components/table/helpers'
 import {
@@ -12,7 +12,7 @@ import isEqual from 'lodash.isequal'
 const initialState = {
   columns: [],
   __initial: true,
-  appliedColumns: new Map()
+  appliedSorting: new Map()
 }
 
 const initialOptions: TableCoreOptions = {
@@ -25,15 +25,13 @@ class TableCore {
   public features: TableFeatures
   private options: TableCoreOptions = initialOptions
 
+  private state: TableState = initialState
+
   constructor() {
     this.features = {
       sorting: new SortingFeature(),
       search: new SearchFeature()
     }
-  }
-
-  public get state(): TableState {
-    return this.options.state
   }
 
   private get columnsMap(): TableColumnsMap {
@@ -43,7 +41,7 @@ class TableCore {
   public createTable = (options: TableCoreOptions): TableCore => {
     this.options = Object.assign(this.options, options)
 
-    if ((options.state as PrivateTableState).__initial) {
+    if (options.state.__initial) {
       this.setState({
         originalData: options.data,
         data: options.data,
@@ -51,30 +49,24 @@ class TableCore {
         __initial: false
       })
 
-      // NOTE temp trick
-      setTimeout(() => {
-        this.initFeatures()
-      })
+      this.initFeatures()
     }
 
-    if (!isEqual(this.state, options.state)) {
+    if (!isEqual(this.options.state, options.state)) {
       this.setState(options.state)
     }
+
+    this.useFeatures()
 
     return this
   }
 
   public readonly setState = (
-    state: PrivateTableState | Partial<PrivateTableState>,
-    overwrite: boolean = false
+    state: TableState | Partial<TableState>
   ): void => {
-    if (overwrite) {
-      this.options.onStateChange(state as TableState)
-      return
-    }
-
     const newState = cloneDeep({ ...this.state, ...state })
-    delete newState.__initial
+
+    this.state = newState
     this.options.onStateChange(newState as TableState)
   }
 
@@ -97,6 +89,25 @@ class TableCore {
     this.setState({
       handleSorting: this.features.sorting.performSorting,
       resetSorting: this.features.sorting.resetSorting
+    })
+  }
+
+  private useFeatures(): void {
+    if (this.options.enableSorting) {
+      this.useSorting()
+    }
+
+    console.log('o', this.options.searchFor)
+  }
+
+  private readonly useSorting = (): void => {
+    this.features.sorting.setOptions({
+      state: this.state,
+      columnsMap: this.columnsMap,
+      enableMultiSorting: this.options.enableMultiSorting,
+      onStateChange: (state) => {
+        this.setState(state)
+      }
     })
   }
 }
