@@ -9,42 +9,48 @@ export const mock = [
     name: 'John',
     age: 25,
     score: {
-      number: 90
+      number: 90,
+      data: ['Soon']
     }
   },
   {
     name: 'Mary',
     age: 30,
     score: {
-      number: 80
+      number: 80,
+      data: ['Soon']
     }
   },
   {
     name: 'Bob',
     age: 25,
     score: {
-      number: 85
+      number: 85,
+      data: ['Soon']
     }
   },
   {
     name: 'Alice',
     age: 20,
     score: {
-      number: 95
+      number: 95,
+      data: ['Soon']
     }
   },
   {
     name: 'Tom',
     age: 30,
     score: {
-      number: 70
+      number: 70,
+      data: ['Soon']
     }
   },
   {
     name: 'Jane',
     age: 20,
     score: {
-      number: 90
+      number: 90,
+      data: ['Soon']
     }
   }
 ]

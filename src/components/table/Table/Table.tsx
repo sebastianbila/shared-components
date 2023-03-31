@@ -21,7 +21,7 @@ const columns: TableColumn[] = [
     type: TableColumnType.TEXT,
     accessor: 'score',
     title: 'score',
-    valueExtractor: (row) => row.score.number,
+    valueExtractor: (row) => row.score.data.join('___'),
     sortBy: 'score.number'
   }
 ]

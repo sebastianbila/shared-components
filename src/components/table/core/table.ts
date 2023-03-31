@@ -101,9 +101,15 @@ class TableCore {
   }
 
   public unsubscribe = (): void => {
-    this.options$.unsubscribe()
-    this.state$.unsubscribe()
-    this.stateChanges$.unsubscribe()
+    // if (!this.options$.closed) {
+    //   this.options$.unsubscribe()
+    // }
+    if (!this.state$.closed) {
+      this.state$.unsubscribe()
+    }
+    if (!this.stateChanges$.closed) {
+      this.stateChanges$.unsubscribe()
+    }
 
     Object.keys(this.features).forEach((key: string) =>
       this.features[key]?.unsubscribe?.()

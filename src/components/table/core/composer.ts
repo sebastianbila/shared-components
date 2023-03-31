@@ -32,7 +32,7 @@ export abstract class Composer<State, Options> {
   }
 
   public unsubscribe = (): void => {
-    this.options$.unsubscribe()
+    if (!this.options$.closed) this.options$.unsubscribe()
   }
 
   protected readonly emitState = (newState: Partial<State>): void => {
