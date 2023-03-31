@@ -26,7 +26,7 @@ export type SortByArray = SortByItem[]
 export type SortingFnReturnType = -1 | 0 | 1
 export type SortingFn = (a: Dictionary, b: Dictionary) => SortingFnReturnType
 
-export interface PrivateSortingState extends Required<BaseTableState> {
+export interface SortingState extends Required<BaseTableState> {
   appliedSorting: AppliedSorting
 }
 
@@ -38,7 +38,7 @@ export interface SortingOptions {
 export interface PrivateSortingOptions extends Partial<SortingOptions> {
   state: TableState
   columnsMap: TableColumnsMap
-  onStateChange: (state: PrivateSortingState) => void
+  onStateChange: (state: SortingState) => void
 }
 
 export interface SortingResult {

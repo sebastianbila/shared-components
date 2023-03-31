@@ -1,17 +1,23 @@
-import { type ComposeOptions } from './types'
+import { type ComposerOptions } from './types'
+import { BehaviorSubject } from 'rxjs'
 
-export class Composer<Options extends ComposeOptions, State> {
-  protected options: Options
+export abstract class Composer<State, Options> {
   protected readonly initialState: State
+  protected options$: BehaviorSubject<Options>
 
-  constructor(initialState?: State, initialOptions?: Options) {
+  protected constructor(
+    initialState?: Partial<State>,
+    initialOptions?: Partial<Options>
+  ) {
     if (initialState) {
       this.initialState = initialState
     }
 
-    if (initialOptions) {
-      this.options = initialOptions
-    }
+    this.options$ = new BehaviorSubject<Options>(initialOptions as Options)
+  }
+
+  protected get options(): Options {
+    return this.options$.value
   }
 
   protected get state(): State {
@@ -21,8 +27,12 @@ export class Composer<Options extends ComposeOptions, State> {
     }
   }
 
-  public readonly setOptions = (options: Options): void => {
-    this.options = options
+  public readonly setOptions = (options: Options & ComposerOptions): void => {
+    this.options$.next(options)
+  }
+
+  public unsubscribe = (): void => {
+    this.options$.unsubscribe()
   }
 
   protected readonly emitState = (newState: Partial<State>): void => {

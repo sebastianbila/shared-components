@@ -6,8 +6,9 @@ import {
   type TableFeatures,
   type TableState
 } from '@/components/table/core/types'
-import cloneDeep from 'lodash.clonedeep'
 import isEqual from 'lodash.isequal'
+import { BehaviorSubject, map, of, Subject, switchMap, tap } from 'rxjs'
+import { distinctUntilChanged } from 'rxjs/operators'
 
 const initialState = {
   __initial: true,
@@ -21,53 +22,96 @@ const initialOptions: TableCoreOptions = {
 }
 
 class TableCore {
-  public features: TableFeatures
-  public state: TableState = initialState
-  private options: TableCoreOptions = initialOptions
+  public readonly initialState = initialState
+
+  public readonly features: TableFeatures
+
+  private readonly state$ = new BehaviorSubject<TableState>(initialState)
+  private readonly stateChanges$ = new Subject<Partial<TableState>>()
+  private readonly options$ = new BehaviorSubject<TableCoreOptions>(
+    initialOptions
+  )
 
   constructor() {
+    // initialize features
     this.features = {
       sorting: new SortingFeature(),
       search: new SearchFeature()
     }
+
+    // watch on local state change to compose and emit state
+    this.stateChanges$
+      .pipe(
+        distinctUntilChanged(isEqual),
+        switchMap((newState) => {
+          const composedState = {
+            ...this.state$.value,
+            ...newState,
+            __initial: false
+          }
+
+          this.options$.value.onStateChange(composedState)
+          return of(composedState).pipe(map(() => composedState))
+        })
+      )
+      .subscribe(this.state$)
+
+    // merge options and enable features
+    this.options$
+      .pipe(
+        distinctUntilChanged(isEqual),
+        switchMap((options: TableCoreOptions) => {
+          const composedOptions = { ...this.options$.value, ...options }
+
+          return of(composedOptions)
+        }),
+        tap((options) => {
+          if (options.state.__initial) {
+            this.emitState({
+              columns: options.columns,
+              data: options.data,
+              originalData: options.data
+            })
+
+            this.initFeatures()
+            return
+          }
+
+          this.emitState(options.state)
+          this.useFeatures()
+        })
+      )
+      .subscribe(this.options$)
+  }
+
+  private get options(): TableCoreOptions {
+    return this.options$.value
+  }
+
+  private get state(): TableState {
+    return this.state$.value
   }
 
   private get columnsMap(): TableColumnsMap {
     return mapTableColumnsArrayToMap(this.state.columns)
   }
 
-  public createTable = (options: TableCoreOptions): void => {
-    this.options = Object.assign(this.options, options)
-
-    if (this.options.state.__initial) {
-      this.emitState({
-        columns: options.columns,
-        data: options.data,
-        originalData: options.data
-      })
-      this.initFeatures()
-
-      return
-    }
-
-    if (!isEqual(this.state, options.state)) {
-      this.emitState(options.state)
-    }
-
-    this.useFeatures()
+  public readonly setOptions = (options: TableCoreOptions): void => {
+    this.options$.next(options)
   }
 
-  private readonly emitState = (
-    newState: TableState | Partial<TableState>
-  ): void => {
-    const _composedState = cloneDeep({
-      ...this.state,
-      ...newState,
-      __initial: false
-    })
+  public unsubscribe = (): void => {
+    this.options$.unsubscribe()
+    this.state$.unsubscribe()
+    this.stateChanges$.unsubscribe()
 
-    this.state = _composedState
-    this.options.onStateChange(_composedState)
+    Object.keys(this.features).forEach((key: string) =>
+      this.features[key]?.unsubscribe?.()
+    )
+  }
+
+  private readonly emitState = (newState: Partial<TableState>): void => {
+    this.stateChanges$.next(newState)
   }
 
   private initFeatures(): void {
@@ -80,31 +124,28 @@ class TableCore {
   }
 
   private useFeatures(): void {
+    // Sorting feature
     if (this.options.enableSorting) {
-      this.useSorting()
+      this.features.sorting.setOptions({
+        state: this.state,
+        columnsMap: this.columnsMap,
+        enableMultiSorting: this.options.enableMultiSorting,
+        onStateChange: (state) => {
+          this.emitState(state)
+        }
+      })
     }
 
+    // Search feature
     if (this.options.enableSearch) {
       this.features.search.setOptions({
         state: this.state,
         searchFor: this.options.searchFor || '',
         onStateChange: (state) => {
-          // this.emitState(state)
+          this.emitState(state)
         }
       })
-      this.features.search.performSearch()
     }
-  }
-
-  private readonly useSorting = (): void => {
-    this.features.sorting.setOptions({
-      state: this.state,
-      columnsMap: this.columnsMap,
-      enableMultiSorting: this.options.enableMultiSorting,
-      onStateChange: (state) => {
-        this.emitState(state)
-      }
-    })
   }
 }
 

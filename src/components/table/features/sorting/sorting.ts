@@ -2,29 +2,26 @@ import { type TableColumn } from '@/components/table'
 import {
   type HandleSortingFn,
   type PrivateSortingOptions,
-  type PrivateSortingState,
-  SORTING_ORDER
+  SORTING_ORDER,
+  type SortingState
 } from './types'
 import SortingEngine from './engine'
 import { mapAppliedSortingMapToArray } from '@/components/table/helpers'
 import { type Dictionary } from '@/types'
 import { Composer } from '@/components/table/core/composer'
 
-const initialState: PrivateSortingState = {
+const initialState: SortingState = {
   originalData: [],
   data: [],
   appliedSorting: new Map()
 }
 
-class SortingFeature extends Composer<
-  PrivateSortingOptions,
-  PrivateSortingState
-> {
-  private readonly sortingEngine: SortingEngine
+class SortingFeature extends Composer<SortingState, PrivateSortingOptions> {
+  private readonly engine: SortingEngine
 
   constructor() {
     super(initialState)
-    this.sortingEngine = new SortingEngine()
+    this.engine = new SortingEngine()
   }
 
   public resetSorting = (): void => {
@@ -68,7 +65,7 @@ class SortingFeature extends Composer<
       return
     }
 
-    const sortedData = this.sortingEngine.performSorting(
+    const sortedData = this.engine.performSorting(
       this.state.data,
       appliedSorting.get(accessor)
     )
@@ -100,7 +97,7 @@ class SortingFeature extends Composer<
     }
 
     const dataToSort = sortBy.length === 1 ? this.state.originalData : data
-    const sortedData = this.sortingEngine.performMultiSorting(
+    const sortedData = this.engine.performMultiSorting(
       dataToSort as Dictionary[],
       sortBy
     )

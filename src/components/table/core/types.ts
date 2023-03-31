@@ -25,7 +25,7 @@ export type TableCoreOptions = {
 } & Partial<SortingOptions> &
   Partial<SearchOptions>
 
-export interface ComposeOptions
+export interface ComposerOptions
   extends Required<Pick<TableCoreOptions, 'state' | 'onStateChange'>> {}
 
 export type TableOptions = Omit<TableCoreOptions, 'state' | 'onStateChange'>
