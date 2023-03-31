@@ -11,8 +11,7 @@ import isEqual from 'lodash.isequal'
 
 const initialState = {
   __initial: true,
-  columns: [],
-  appliedSorting: new Map()
+  columns: []
 }
 
 const initialOptions: TableCoreOptions = {
@@ -23,9 +22,8 @@ const initialOptions: TableCoreOptions = {
 
 class TableCore {
   public features: TableFeatures
-
+  public state: TableState = initialState
   private options: TableCoreOptions = initialOptions
-  private state: TableState = initialState
 
   constructor() {
     this.features = {
@@ -42,7 +40,7 @@ class TableCore {
     this.options = Object.assign(this.options, options)
 
     if (this.options.state.__initial) {
-      this.setState({
+      this.emitState({
         columns: options.columns,
         data: options.data,
         originalData: options.data
@@ -53,28 +51,28 @@ class TableCore {
     }
 
     if (!isEqual(this.state, options.state)) {
-      this.setState(options.state)
+      this.emitState(options.state)
     }
 
     this.useFeatures()
   }
 
-  private readonly setState = (
-    state: TableState | Partial<TableState>
+  private readonly emitState = (
+    newState: TableState | Partial<TableState>
   ): void => {
-    const newState = cloneDeep({
+    const _composedState = cloneDeep({
       ...this.state,
-      ...state,
+      ...newState,
       __initial: false
     })
 
-    this.state = newState
-    this.options.onStateChange(newState)
+    this.state = _composedState
+    this.options.onStateChange(_composedState)
   }
 
   private initFeatures(): void {
     if (this.options.enableSorting) {
-      this.setState({
+      this.emitState({
         handleSorting: this.features.sorting.performSorting,
         resetSorting: this.features.sorting.resetSorting
       })
@@ -85,6 +83,17 @@ class TableCore {
     if (this.options.enableSorting) {
       this.useSorting()
     }
+
+    if (this.options.enableSearch) {
+      this.features.search.setOptions({
+        state: this.state,
+        searchFor: this.options.searchFor || '',
+        onStateChange: (state) => {
+          // this.emitState(state)
+        }
+      })
+      this.features.search.performSearch()
+    }
   }
 
   private readonly useSorting = (): void => {
@@ -93,7 +102,7 @@ class TableCore {
       columnsMap: this.columnsMap,
       enableMultiSorting: this.options.enableMultiSorting,
       onStateChange: (state) => {
-        this.setState(state)
+        this.emitState(state)
       }
     })
   }

@@ -1,7 +1,7 @@
 import React, { type FC, useCallback } from 'react'
 import { type TableColumn } from '@/components/table/types'
 import { useTableContext } from '@/components/table/context'
-import { type AppliedSorting } from '@/components/table/features/sorting'
+import { type AppliedSorting } from '@/components/table/features'
 import noop from 'lodash.noop'
 
 interface TableHeaderProps {

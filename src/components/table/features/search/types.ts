@@ -1,10 +1,13 @@
-import { type RowsData } from '@/components'
+import { type BaseTableState, type TableState } from '@/components'
 
-export interface SearchState {
-  data: RowsData
+export interface SearchState extends Required<BaseTableState> {}
+
+export interface SearchOptions {
+  enableSearch: boolean
+  searchFor: string
 }
 
-export interface SearchFeatureOptions {
-  searchFor?: string
-  onStateChange: (SearchState) => void
+export interface PrivateSearchOptions extends Pick<SearchOptions, 'searchFor'> {
+  state: TableState
+  onStateChange: (state: SearchState) => void
 }

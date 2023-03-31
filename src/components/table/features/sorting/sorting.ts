@@ -1,44 +1,34 @@
 import { type TableColumn } from '@/components/table'
 import {
   type HandleSortingFn,
-  SORTING_ORDER,
-  type SortingOptions,
-  type SortingState
+  type PrivateSortingOptions,
+  type PrivateSortingState,
+  SORTING_ORDER
 } from './types'
 import SortingEngine from './engine'
 import { mapAppliedSortingMapToArray } from '@/components/table/helpers'
 import { type Dictionary } from '@/types'
+import { Composer } from '@/components/table/core/composer'
 
-const initialOptions = {
-  columnsMap: new Map(),
-  state: {
-    columns: [],
-    data: [],
-    originalData: [],
-    appliedSorting: new Map()
-  },
-  onStateChange: () => {}
+const initialState: PrivateSortingState = {
+  originalData: [],
+  data: [],
+  appliedSorting: new Map()
 }
 
-class SortingFeature {
-  private options: SortingOptions = initialOptions
-
+class SortingFeature extends Composer<
+  PrivateSortingOptions,
+  PrivateSortingState
+> {
   private readonly sortingEngine: SortingEngine
 
   constructor() {
+    super(initialState)
     this.sortingEngine = new SortingEngine()
   }
 
-  private get state(): SortingState {
-    return this.options.state as SortingState
-  }
-
-  public setOptions = (options: SortingOptions): void => {
-    this.options = options
-  }
-
   public resetSorting = (): void => {
-    this.setState({
+    this.emitState({
       appliedSorting: new Map(),
       data: this.state.originalData
     })
@@ -70,7 +60,7 @@ class SortingFeature {
     })
 
     if (order === SORTING_ORDER.DEFAULT) {
-      this.setState({
+      this.emitState({
         data: this.state.originalData,
         appliedSorting: new Map()
       })
@@ -83,7 +73,7 @@ class SortingFeature {
       appliedSorting.get(accessor)
     )
 
-    this.setState({
+    this.emitState({
       data: sortedData,
       appliedSorting
     })
@@ -103,7 +93,7 @@ class SortingFeature {
     )
 
     if (!sortBy.length) {
-      this.setState({
+      this.emitState({
         data: this.state.originalData
       })
       return
@@ -115,7 +105,7 @@ class SortingFeature {
       sortBy
     )
 
-    this.setState({
+    this.emitState({
       data: sortedData
     })
   }
@@ -140,7 +130,7 @@ class SortingFeature {
       })
     }
 
-    this.setState({ appliedSorting })
+    this.emitState({ appliedSorting })
   }
 
   private readonly getNextSortingOrder = (accessor: string): SORTING_ORDER => {
@@ -156,10 +146,6 @@ class SortingFeature {
       appliedSorting.get(accessor)?.order ?? SORTING_ORDER.DEFAULT
 
     return orderMatching[currentColumnOrder]
-  }
-
-  private readonly setState = (newState: Partial<SortingState>): void => {
-    this.options.onStateChange({ ...this.state, ...newState })
   }
 }
 

@@ -41,10 +41,11 @@ const Table: FC<TableProps> = () => {
     columns,
     data: mock,
 
-    searchFor: searchValue,
-
     enableSorting: true,
-    enableMultiSorting: true
+    enableMultiSorting: true,
+    enableSearch: true,
+
+    searchFor: searchValue
   })
 
   return (
